@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace DependentChecker
@@ -21,6 +13,10 @@ namespace DependentChecker
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string _dependencyPath;
+
+        private List<string> libraryList = new List<string>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -28,8 +24,9 @@ namespace DependentChecker
 
         private void DependencyChoose_Click(object sender, RoutedEventArgs e)
         {
-            var fileName = PickDependencyDialog();
-            PathTextBox.Text = fileName;
+            _dependencyPath = PickDependencyDialog();
+            PathTextBox.Text = _dependencyPath;
+            FindDependent(_dependencyPath);
         }
 
         internal static string PickDependencyDialog()
@@ -47,6 +44,73 @@ namespace DependentChecker
                 }
 
                 return string.Empty;
+            }
+        }
+
+        private void FindDependent(string dependencyPath)
+        {
+            var folder = Path.GetDirectoryName(dependencyPath);
+            if (string.IsNullOrWhiteSpace(folder))
+            {
+                throw new Exception($"Can not get the folder of path {dependencyPath}");
+            }
+
+            string libraryName = Path.GetFileNameWithoutExtension(dependencyPath);
+            DirectoryInfo directoryInfo = new DirectoryInfo(folder);
+            var extensions = new[] { ".dll", ".exe" };
+            var totalFiles = directoryInfo.GetFiles();
+            var assemblyFiles = totalFiles.Where(x => extensions.Contains(x.Extension)).ToList();//all .exe and .dll files under folder
+
+            var libraries = new[] {
+                libraryName,
+            };
+            string version = string.Empty;
+            bool find = false;
+            foreach (var assemblyFile in assemblyFiles)
+            {
+                AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyFile.FullName);
+                if (libraries.Contains(assemblyName.Name))
+                {
+                    Console.WriteLine(assemblyName.FullName);
+                    version = assemblyName.Version.ToString();
+                    find = true;
+                    break;
+                }
+            }
+
+            if (!find)
+            {
+                throw new Exception($"Can not find {libraryName} under {folder}");
+            }
+
+            int i = 0;
+            foreach (var assemblyFile in assemblyFiles)
+            {
+                AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyFile.FullName);
+                var assembly = Assembly.Load(assemblyName);
+                var allDependencies = assembly.GetReferencedAssemblies().ToList();
+                var dependencies = allDependencies.Where(x => libraries.Contains(x.Name)).ToList();
+                if (dependencies.Count > 0)
+                {
+                    i++;
+                    Console.WriteLine(i);
+                    Console.WriteLine(assemblyName);
+                    var tempName = assemblyName.Name;
+                    if (!libraryList.Contains(tempName))
+                    {
+                        libraryList.Add(tempName);
+                    }
+
+                    foreach (var dependency in dependencies)
+                    {
+                        Console.WriteLine($"{dependency.FullName}");
+                        if (!dependency.Version.ToString().Equals(version))
+                        {
+                            Console.WriteLine($"{dependency.Version}!={version}");
+                        }
+                        Console.WriteLine();
+                    }
+                }
             }
         }
     }

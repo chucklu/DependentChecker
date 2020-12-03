@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DependentChecker"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="DependentChecker" Height="450" Width="800">
     <DockPanel Margin="10">
         <DockPanel Name="PathPanel" DockPanel.Dock="Top">
             <Button Name="DependencyChoose" Margin="5" Width="150" Height="30" DockPanel.Dock="Right" Click="DependencyChoose_Click">Choose dependency</Button>
