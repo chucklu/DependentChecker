@@ -14,14 +14,11 @@
         </DockPanel>
         <DockPanel DockPanel.Dock="Top" Name="FilesPanel">
             <TextBlock Name="InfoText" Margin="5" VerticalAlignment="Center" Text="{Binding Path=CurrentFilteringStatus}" DockPanel.Dock="Top"/>
-            <DataGrid Name="FilesList" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" ItemsSource="{Binding FileRecords}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="None">
+            <DataGrid Name="FilesList" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" ItemsSource="{Binding dep}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="None">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Assembly Name" Binding="{Binding AssemblyName}" Width="100" />
-                    <DataGridTextColumn Header="Signature" Binding="{Binding Signature}" Width="100" />
-                    <DataGridTextColumn Header="Product Version" Binding="{Binding ProductVersion}" Width="220" />
-                    <DataGridTextColumn Header="File Version" Binding="{Binding FileVersion}" Width="140" />
-                    <DataGridTextColumn Header="File Path" Binding="{Binding FilePath}" Width="420" />
-                    <DataGridTextColumn Header="References" Binding="{Binding ReferencesCheck}" Width="100" />
+                    <DataGridTextColumn Header="Dependent Name" Binding="{ Binding Path=DependentName}" Width="100" />
+                    <DataGridTextColumn Header="Dependency Name" Binding="{Binding Path=DependencyName}" Width="100" />
+                    <DataGridTextColumn Header="Dependency Version" Binding="{Binding Path=DependencyVersion}" Width="100" />
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>

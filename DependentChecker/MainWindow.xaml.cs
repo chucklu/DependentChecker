@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,7 +27,16 @@ namespace DependentChecker
         {
             _dependencyPath = PickDependencyDialog();
             PathTextBox.Text = _dependencyPath;
+            SetInfoText(_dependencyPath);
             FindDependent(_dependencyPath);
+        }
+
+
+        private void SetInfoText(string dependencyPath)
+        {
+            var dependency = Assembly.LoadFile(dependencyPath);
+            var dependencyAssemblyName = dependency.GetName();
+            InfoText.Text = $"{dependencyAssemblyName.Name} {dependencyAssemblyName.Version}";
         }
 
         internal static string PickDependencyDialog()
@@ -110,8 +120,17 @@ namespace DependentChecker
                         }
                         Console.WriteLine();
                     }
+
+                    var tempDependency = dependencies[0];
+                    FilesList.Items.Add(new DependentLibrary
+                    {
+                        DependentName = assemblyName.Name,
+                        DependencyName = tempDependency.Name,
+                        DependencyVersion = tempDependency.Version.ToString()
+                    });
                 }
             }
         }
+
     }
 }
