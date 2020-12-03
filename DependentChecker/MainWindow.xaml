@@ -6,7 +6,24 @@
         xmlns:local="clr-namespace:DependentChecker"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+    <DockPanel Margin="10">
+        <DockPanel Name="PathPanel" DockPanel.Dock="Top">
+            <Button Name="DependencyChoose" Margin="5" Width="150" Height="30" DockPanel.Dock="Right" Click="DependencyChoose_Click">Choose dependency</Button>
+            <Button Name="Refresh" Margin="5" Width="30" Height="30" DockPanel.Dock="Right">⟳</Button>
+            <TextBox Name="PathTextBox" IsReadOnly="True" Margin="5" MaxLines="1"></TextBox>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top" Name="FilesPanel">
+            <TextBlock Name="InfoText" Margin="5" VerticalAlignment="Center" Text="{Binding Path=CurrentFilteringStatus}" DockPanel.Dock="Top"/>
+            <DataGrid Name="FilesList" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" ItemsSource="{Binding FileRecords}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="None">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Assembly Name" Binding="{Binding AssemblyName}" Width="100" />
+                    <DataGridTextColumn Header="Signature" Binding="{Binding Signature}" Width="100" />
+                    <DataGridTextColumn Header="Product Version" Binding="{Binding ProductVersion}" Width="220" />
+                    <DataGridTextColumn Header="File Version" Binding="{Binding FileVersion}" Width="140" />
+                    <DataGridTextColumn Header="File Path" Binding="{Binding FilePath}" Width="420" />
+                    <DataGridTextColumn Header="References" Binding="{Binding ReferencesCheck}" Width="100" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </DockPanel>
 </Window>
