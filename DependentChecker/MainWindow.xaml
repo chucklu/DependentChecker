@@ -16,9 +16,9 @@
             <TextBlock Name="InfoText" Margin="5" VerticalAlignment="Center" Text="{Binding Path=CurrentFilteringStatus}" DockPanel.Dock="Top"/>
             <DataGrid Name="FilesList" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" ItemsSource="{Binding dep}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="None">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Dependent Name" Binding="{ Binding Path=DependentName}" Width="100" />
-                    <DataGridTextColumn Header="Dependency Name" Binding="{Binding Path=DependencyName}" Width="100" />
-                    <DataGridTextColumn Header="Dependency Version" Binding="{Binding Path=DependencyVersion}" Width="100" />
+                    <DataGridTextColumn Header="Dependent Name" Binding="{ Binding Path=DependentName}" Width="*" />
+                    <DataGridTextColumn Header="Dependency Name" Binding="{Binding Path=DependencyName}" Width="*" />
+                    <DataGridTextColumn Header="Dependency Version" Binding="{Binding Path=DependencyVersion}" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>

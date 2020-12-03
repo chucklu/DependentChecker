@@ -27,16 +27,16 @@ namespace DependentChecker
         {
             _dependencyPath = PickDependencyDialog();
             PathTextBox.Text = _dependencyPath;
-            SetInfoText(_dependencyPath);
-            FindDependent(_dependencyPath);
+            bool needBindingRedirect = FindDependent(_dependencyPath);
+            SetInfoText(_dependencyPath, needBindingRedirect);
         }
 
 
-        private void SetInfoText(string dependencyPath)
+        private void SetInfoText(string dependencyPath,bool needBindingRedirect)
         {
             var dependency = Assembly.LoadFile(dependencyPath);
             var dependencyAssemblyName = dependency.GetName();
-            InfoText.Text = $"{dependencyAssemblyName.Name} {dependencyAssemblyName.Version}";
+            InfoText.Text = $"The dependents of {dependencyAssemblyName.Name} are as following:(NeedBindingRedirect:{needBindingRedirect})";
         }
 
         internal static string PickDependencyDialog()
@@ -57,8 +57,9 @@ namespace DependentChecker
             }
         }
 
-        private void FindDependent(string dependencyPath)
+        private bool FindDependent(string dependencyPath)
         {
+            bool needBindingRedirect = false;
             var folder = Path.GetDirectoryName(dependencyPath);
             if (string.IsNullOrWhiteSpace(folder))
             {
@@ -117,6 +118,7 @@ namespace DependentChecker
                         if (!dependency.Version.ToString().Equals(version))
                         {
                             Console.WriteLine($"{dependency.Version}!={version}");
+                            needBindingRedirect = true;
                         }
                         Console.WriteLine();
                     }
@@ -130,6 +132,8 @@ namespace DependentChecker
                     });
                 }
             }
+
+            return needBindingRedirect;
         }
 
     }
