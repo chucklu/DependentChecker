@@ -36,7 +36,7 @@ namespace DependentChecker
         {
             var dependency = Assembly.LoadFile(dependencyPath);
             var dependencyAssemblyName = dependency.GetName();
-            InfoText.Text = $"The dependents of {dependencyAssemblyName.Name} are as following:(NeedBindingRedirect:{needBindingRedirect})";
+            InfoText.Text = $"The dependents of {dependencyAssemblyName.Name}({dependencyAssemblyName.Version}) are as following:(NeedBindingRedirect:{needBindingRedirect})";
         }
 
         internal static string PickDependencyDialog()
@@ -59,6 +59,7 @@ namespace DependentChecker
 
         private bool FindDependent(string dependencyPath)
         {
+            FilesList.Items.Clear();
             bool needBindingRedirect = false;
             var folder = Path.GetDirectoryName(dependencyPath);
             if (string.IsNullOrWhiteSpace(folder))
