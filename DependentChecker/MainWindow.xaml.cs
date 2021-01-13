@@ -36,7 +36,7 @@ namespace DependentChecker
 
         private void SetInfoText(string dependencyPath,bool needBindingRedirect)
         {
-            var dependency = Assembly.LoadFile(dependencyPath);
+            var dependency = Assembly.ReflectionOnlyLoadFrom(dependencyPath);
             var dependencyAssemblyName = dependency.GetName();
             InfoText.Text = $"The dependents of {dependencyAssemblyName.Name}({dependencyAssemblyName.Version}) are as following:(NeedBindingRedirect:{needBindingRedirect})";
         }
