@@ -21,6 +21,8 @@ namespace DependentChecker
         public MainWindow()
         {
             InitializeComponent();
+            RegisterUncaughtExceptionsHandler(AppDomain.CurrentDomain);
+
         }
 
         private void DependencyChoose_Click(object sender, RoutedEventArgs e)
@@ -137,5 +139,15 @@ namespace DependentChecker
             return needBindingRedirect;
         }
 
+        private void RegisterUncaughtExceptionsHandler(AppDomain domain)
+        {
+            domain.UnhandledException += new UnhandledExceptionEventHandler(
+                (sender, args) =>
+                {
+                    Exception e = (Exception)args.ExceptionObject;
+                    System.Windows.MessageBox.Show(e.ToString(), "Error");
+                    Close();
+                });
+        }
     }
 }
