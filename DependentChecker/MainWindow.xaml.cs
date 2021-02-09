@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using DependentChecker.Log;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Serilog.Events;
 
 namespace DependentChecker
 {
@@ -18,11 +19,13 @@ namespace DependentChecker
 
         private List<string> libraryList = new List<string>();
 
+        private ChuckSerilog logHelper = new ChuckSerilog();
+
         public MainWindow()
         {
             InitializeComponent();
             RegisterUncaughtExceptionsHandler(AppDomain.CurrentDomain);
-
+            logHelper.StartProgram();
         }
 
         private void DependencyChoose_Click(object sender, RoutedEventArgs e)
@@ -145,7 +148,8 @@ namespace DependentChecker
                 (sender, args) =>
                 {
                     Exception e = (Exception)args.ExceptionObject;
-                    System.Windows.MessageBox.Show(e.ToString(), "Error");
+                    logHelper.CreateLog(LogEventLevel.Error, e);
+                    MessageBox.Show(e.ToString(), "Error");
                     Close();
                 });
         }
