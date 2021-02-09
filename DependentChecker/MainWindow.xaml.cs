@@ -34,7 +34,7 @@ namespace DependentChecker
             SetInfoText(_dependencyPath, needBindingRedirect);
 
             var folder = Path.GetDirectoryName(_dependencyPath);
-            AllFilesScan.Scan(folder);
+            AllFilesScanner.ScanFolder(folder);
         }
 
 
