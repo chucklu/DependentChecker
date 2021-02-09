@@ -184,6 +184,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DependentLibrary.cs" />
+    <Compile Include="Helper\AllFilesScan.cs" />
+    <Compile Include="Helper\LogHelper.cs" />
     <Compile Include="Log\ChuckSerilog.cs" />
     <Compile Include="Log\SerilogJsonConfiguration.cs" />
     <Compile Include="MainWindow.xaml.cs">
