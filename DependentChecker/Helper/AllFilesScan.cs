@@ -11,7 +11,13 @@ namespace DependentChecker.Helper
     {
         public static void Scan(string folder)
         {
-            LogHelper.CreateLog(LogEventLevel.Information,"All files scan started.");
+            LogHelper.CreateLog(LogEventLevel.Information,"Start to scan all files.");
+            var files = FileHelper.GetExeAndDllFileInfos(folder).ToList();
+            foreach (var file in files)
+            {
+                LogHelper.CreateLog(LogEventLevel.Information, $"Start to analysis {file.FullName}");
+            }
+            LogHelper.CreateLog(LogEventLevel.Information, "Scan all files completed.");
         }
     }
 }

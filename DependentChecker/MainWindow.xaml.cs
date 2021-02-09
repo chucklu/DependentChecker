@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using DependentChecker.Helper;
-using DependentChecker.Log;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog.Events;
 
@@ -74,12 +73,9 @@ namespace DependentChecker
                 throw new Exception($"Can not get the folder of path {dependencyPath}");
             }
 
-            string libraryName = Path.GetFileNameWithoutExtension(dependencyPath);
-            DirectoryInfo directoryInfo = new DirectoryInfo(folder);
-            var extensions = new[] { ".dll", ".exe" };
-            var totalFiles = directoryInfo.GetFiles();
-            var assemblyFiles = totalFiles.Where(x => extensions.Contains(x.Extension)).ToList();//all .exe and .dll files under folder
+            var assemblyFiles = FileHelper.GetExeAndDllFileInfos(folder).ToList();//all .exe and .dll files under folder
 
+            string libraryName = Path.GetFileNameWithoutExtension(dependencyPath);
             var libraries = new[] {
                 libraryName,
             };
