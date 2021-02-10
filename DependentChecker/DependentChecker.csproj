@@ -185,6 +185,7 @@
     </Compile>
     <Compile Include="DependentLibrary.cs" />
     <Compile Include="Helper\AllFilesScanner.cs" />
+    <Compile Include="Helper\ConfigHelper.cs" />
     <Compile Include="Helper\FileHelper.cs" />
     <Compile Include="Helper\LogHelper.cs" />
     <Compile Include="Log\ChuckSerilog.cs" />

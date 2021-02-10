@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Windows;
 using DependentChecker.Helper;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -37,9 +38,35 @@ namespace DependentChecker
             SetInfoText(_dependencyPath, needBindingRedirect);
 
             var folder = Path.GetDirectoryName(_dependencyPath);
-            AllFilesScanner.ScanFolder(folder);
+            var scanResults = AllFilesScanner.ScanFolder(folder);
+            if (string.IsNullOrWhiteSpace(_configFilePath))
+            {
+                RecordScanResults(scanResults);
+                return;
+            }
+
+
         }
 
+        private void RecordScanResults(IEnumerable<SingleFileScanResult> results)
+        {
+            var needBindingRedirectResults = results.Where(x => x.NeedBindingRedirect).ToList();
+            int count = needBindingRedirectResults.Count;
+            LogHelper.CreateLog(LogEventLevel.Information,$"We need have bindingRedirect for {count} assemblies as following:");
+
+            int index = 0;
+            foreach (var needBindingRedirectResult in needBindingRedirectResults)
+            {
+                index++;
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.AppendLine(
+                    $"Assembly{index:000}  {needBindingRedirectResult.DependencyName} need have binding redirect.");
+                var str = string.Join(Environment.NewLine,
+                    needBindingRedirectResult.DependentLibraries.Select(x => x.ToString()));
+                stringBuilder.AppendLine(str);
+                LogHelper.CreateLog(LogEventLevel.Information, stringBuilder.ToString());
+            }
+        }
 
         private void SetInfoText(string dependencyPath,bool needBindingRedirect)
         {

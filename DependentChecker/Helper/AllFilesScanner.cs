@@ -10,11 +10,11 @@ namespace DependentChecker.Helper
 {
     public class AllFilesScanner
     {
-        public static void ScanFolder(string folder)
+        public static List<SingleFileScanResult> ScanFolder(string folder)
         {
             LogHelper.CreateLog(LogEventLevel.Information,"Start to scan all files.");
             var files = FileHelper.GetExeAndDllFileInfos(folder).ToList();
-            var results=new List<SingleFileScanResult>();
+            var results = new List<SingleFileScanResult>();
             foreach (var file in files)
             {
                 LogHelper.CreateLog(LogEventLevel.Information, $"Start to analysis {file.FullName}");
@@ -22,20 +22,7 @@ namespace DependentChecker.Helper
                 results.Add(result);
             }
             LogHelper.CreateLog(LogEventLevel.Information, "Scan all files completed.");
-            var needBindingRedirectResults = results.Where(x => x.NeedBindingRedirect);
-
-            int count = 0;
-            foreach (var needBindingRedirectResult in needBindingRedirectResults)
-            {
-                count++;
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.AppendLine(
-                    $"Assembly{count:000}  {needBindingRedirectResult.DependencyName} need have binding redirect.");
-                var str = string.Join(Environment.NewLine,
-                    needBindingRedirectResult.DependentLibraries.Select(x => x.ToString()));
-                stringBuilder.AppendLine(str);
-                LogHelper.CreateLog(LogEventLevel.Information, stringBuilder.ToString());
-            }
+            return results;
         }
 
         public static SingleFileScanResult ScanFile(string filePath,IEnumerable<FileInfo> files)
