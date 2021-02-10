@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using DependentChecker.Helper;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -185,6 +186,37 @@ namespace DependentChecker
         private void FolderChoose_Click(object sender, RoutedEventArgs e)
         {
             var folder = PickFolderDialog();
+            Thread thread = new Thread(new ParameterizedThreadStart(ScanAllLibraries));
+            thread.IsBackground = true;
+            thread.Start(folder);
+        }
+
+        internal static string PickFolderDialog()
+        {
+            using (CommonOpenFileDialog fileDialog = new CommonOpenFileDialog())
+            {
+                fileDialog.IsFolderPicker = true;
+                fileDialog.EnsurePathExists = true;
+                fileDialog.Multiselect = false;
+
+                CommonFileDialogResult result = fileDialog.ShowDialog();
+                if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fileDialog.FileName))
+                {
+                    return fileDialog.FileName;
+                }
+
+                return string.Empty;
+            }
+        }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ScanAllLibraries(object parameter)
+        {
+            var folder = parameter as string;
             var scanResults = AllFilesScanner.ScanFolder(folder);
             RecordScanResults(scanResults);
             if (string.IsNullOrWhiteSpace(_configFilePath))
@@ -216,29 +248,6 @@ namespace DependentChecker
             {
                 LogHelper.CreateLog(LogEventLevel.Information, item);
             }
-        }
-
-        internal static string PickFolderDialog()
-        {
-            using (CommonOpenFileDialog fileDialog = new CommonOpenFileDialog())
-            {
-                fileDialog.IsFolderPicker = true;
-                fileDialog.EnsurePathExists = true;
-                fileDialog.Multiselect = false;
-
-                CommonFileDialogResult result = fileDialog.ShowDialog();
-                if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fileDialog.FileName))
-                {
-                    return fileDialog.FileName;
-                }
-
-                return string.Empty;
-            }
-        }
-
-        private void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }
