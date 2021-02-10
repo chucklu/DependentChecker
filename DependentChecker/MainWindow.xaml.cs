@@ -33,42 +33,8 @@ namespace DependentChecker
         {
             var dependencyExtensions = ".exe;*.dll";
             _dependencyPath = ChooseFileDialog("library", dependencyExtensions);
-            PathTextBox.Text = _dependencyPath;
             bool needBindingRedirect = FindDependent(_dependencyPath);
             SetInfoText(_dependencyPath, needBindingRedirect);
-
-            var folder = Path.GetDirectoryName(_dependencyPath);
-            var scanResults = AllFilesScanner.ScanFolder(folder);
-            RecordScanResults(scanResults);
-            if (string.IsNullOrWhiteSpace(_configFilePath))
-            {
-                return;
-            }
-
-            ConfigHelper.ConfigFilePathValue = _configFilePath;
-            var allBindingRedirect = ConfigHelper.GetAllBindingRedirect().ToList();
-            LogHelper.CreateLog(LogEventLevel.Debug,$"Currently we have bindingRedirect for {allBindingRedirect.Count} assemblies in config file as following:");
-            foreach (var bindingRedirect in allBindingRedirect)
-            {
-                LogHelper.CreateLog(LogEventLevel.Debug, bindingRedirect);
-            }
-
-            var needBindingRedirectResults =
-                scanResults.Where(x => x.NeedBindingRedirect).Select(x => x.DependencyName).ToList();
-            var uselessBindingRedirect = allBindingRedirect.Except(needBindingRedirectResults).ToList();
-            var lackingBindingRedirect = needBindingRedirectResults.Except(allBindingRedirect).ToList();
-
-            LogHelper.CreateLog(LogEventLevel.Information,$"Please remove the following {uselessBindingRedirect.Count} useless bindingRedirect:");
-            foreach (var item in uselessBindingRedirect)
-            {
-                LogHelper.CreateLog(LogEventLevel.Information, item);
-            }
-
-            LogHelper.CreateLog(LogEventLevel.Information, $"Please complement the following {lackingBindingRedirect.Count} required bindingRedirect:");
-            foreach (var item in lackingBindingRedirect)
-            {
-                LogHelper.CreateLog(LogEventLevel.Information, item);
-            }
         }
 
         private void RecordScanResults(IEnumerable<SingleFileScanResult> results)
@@ -118,6 +84,7 @@ namespace DependentChecker
 
         private bool FindDependent(string dependencyPath)
         {
+            LogHelper.CreateLog(LogEventLevel.Information, $"Dependency file chose: {dependencyPath}");
             FilesList.Items.Clear();
             bool needBindingRedirect = false;
             var folder = Path.GetDirectoryName(dependencyPath);
@@ -181,12 +148,14 @@ namespace DependentChecker
                     }
 
                     var tempDependency = dependencies[0];
-                    FilesList.Items.Add(new DependentLibrary
+                    var dependentLibrary = new DependentLibrary
                     {
                         DependentName = assemblyName.Name,
                         DependencyName = tempDependency.Name,
                         DependencyVersion = tempDependency.Version.ToString()
-                    });
+                    };
+                    FilesList.Items.Add(dependentLibrary);
+                    LogHelper.CreateLog(LogEventLevel.Information, $"{dependentLibrary.DependentName} depends on [{dependentLibrary.DependencyName}]({dependentLibrary.DependencyVersion})");
                 }
             }
 
@@ -211,6 +180,65 @@ namespace DependentChecker
             var rawDisplayName = "config";
             _configFilePath = ChooseFileDialog(rawDisplayName, configFileExtensions);
             LogHelper.CreateLog(LogEventLevel.Information, $"Config file chose: \"{_configFilePath}\"");
+        }
+
+        private void FolderChoose_Click(object sender, RoutedEventArgs e)
+        {
+            var folder = PickFolderDialog();
+            var scanResults = AllFilesScanner.ScanFolder(folder);
+            RecordScanResults(scanResults);
+            if (string.IsNullOrWhiteSpace(_configFilePath))
+            {
+                return;
+            }
+
+            ConfigHelper.ConfigFilePathValue = _configFilePath;
+            var allBindingRedirect = ConfigHelper.GetAllBindingRedirect().ToList();
+            LogHelper.CreateLog(LogEventLevel.Debug, $"Currently we have bindingRedirect for {allBindingRedirect.Count} assemblies in config file as following:");
+            foreach (var bindingRedirect in allBindingRedirect)
+            {
+                LogHelper.CreateLog(LogEventLevel.Debug, bindingRedirect);
+            }
+
+            var needBindingRedirectResults =
+                scanResults.Where(x => x.NeedBindingRedirect).Select(x => x.DependencyName).ToList();
+            var uselessBindingRedirect = allBindingRedirect.Except(needBindingRedirectResults).ToList();
+            var lackingBindingRedirect = needBindingRedirectResults.Except(allBindingRedirect).ToList();
+
+            LogHelper.CreateLog(LogEventLevel.Information, $"Please remove the following {uselessBindingRedirect.Count} useless bindingRedirect:");
+            foreach (var item in uselessBindingRedirect)
+            {
+                LogHelper.CreateLog(LogEventLevel.Information, item);
+            }
+
+            LogHelper.CreateLog(LogEventLevel.Information, $"Please complement the following {lackingBindingRedirect.Count} required bindingRedirect:");
+            foreach (var item in lackingBindingRedirect)
+            {
+                LogHelper.CreateLog(LogEventLevel.Information, item);
+            }
+        }
+
+        internal static string PickFolderDialog()
+        {
+            using (CommonOpenFileDialog fileDialog = new CommonOpenFileDialog())
+            {
+                fileDialog.IsFolderPicker = true;
+                fileDialog.EnsurePathExists = true;
+                fileDialog.Multiselect = false;
+
+                CommonFileDialogResult result = fileDialog.ShowDialog();
+                if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(fileDialog.FileName))
+                {
+                    return fileDialog.FileName;
+                }
+
+                return string.Empty;
+            }
+        }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
