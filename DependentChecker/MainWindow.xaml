@@ -10,6 +10,7 @@
         <DockPanel Name="PathPanel" DockPanel.Dock="Top">
             <Button Name="DependencyChoose" Margin="5" Width="150" Height="30" DockPanel.Dock="Right" Click="DependencyChoose_Click">Choose dependency</Button>
             <Button Name="Refresh" Margin="5" Width="30" Height="30" DockPanel.Dock="Right">⟳</Button>
+            <Button Name="ConfigFileChoose" Margin="5" Width="150" Height="30" DockPanel.Dock="Right" Click="ConfigFileChoose_Click">Choose Config File</Button>
             <TextBox Name="PathTextBox" IsReadOnly="True" Margin="5" MaxLines="1"></TextBox>
         </DockPanel>
         <DockPanel DockPanel.Dock="Top" Name="FilesPanel">

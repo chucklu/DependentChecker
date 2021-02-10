@@ -17,7 +17,9 @@ namespace DependentChecker
     {
         private string _dependencyPath;
 
-        private List<string> libraryList = new List<string>();
+        private string _configFilePath;
+
+        private readonly List<string> libraryList = new List<string>();
 
         public MainWindow()
         {
@@ -28,7 +30,8 @@ namespace DependentChecker
 
         private void DependencyChoose_Click(object sender, RoutedEventArgs e)
         {
-            _dependencyPath = PickDependencyDialog();
+            var dependencyExtensions = ".exe;*.dll";
+            _dependencyPath = ChooseFileDialog("library", dependencyExtensions);
             PathTextBox.Text = _dependencyPath;
             bool needBindingRedirect = FindDependent(_dependencyPath);
             SetInfoText(_dependencyPath, needBindingRedirect);
@@ -45,11 +48,11 @@ namespace DependentChecker
             InfoText.Text = $"The dependents of {dependencyAssemblyName.Name}({dependencyAssemblyName.Version}) are as following:(NeedBindingRedirect:{needBindingRedirect})";
         }
 
-        internal static string PickDependencyDialog()
+        internal static string ChooseFileDialog(string rawDisplayName, string extensions)
         {
             using (CommonOpenFileDialog fileDialog = new CommonOpenFileDialog())
             {
-                fileDialog.Filters.Add(new CommonFileDialogFilter("library", ".exe;*.dll"));
+                fileDialog.Filters.Add(new CommonFileDialogFilter(rawDisplayName, extensions));
                 fileDialog.EnsurePathExists = true;
                 fileDialog.Multiselect = false;
 
@@ -150,6 +153,14 @@ namespace DependentChecker
                     MessageBox.Show(e.ToString(), "Error");
                     Close();
                 });
+        }
+
+        private void ConfigFileChoose_Click(object sender, RoutedEventArgs e)
+        {
+            var configFileExtensions = ".config";
+            var rawDisplayName = "config";
+            _configFilePath = ChooseFileDialog(rawDisplayName, configFileExtensions);
+            LogHelper.CreateLog(LogEventLevel.Information, $"Config file chose: \"{_configFilePath}\"");
         }
     }
 }
