@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Serilog.Events;
 
 namespace DependentChecker.Helper
@@ -12,16 +11,16 @@ namespace DependentChecker.Helper
     {
         public static List<SingleFileScanResult> ScanFolder(string folder)
         {
-            LogHelper.CreateLog(LogEventLevel.Information,"Start to scan all files.");
+            LogHelper.CreateLog(LogEventLevel.Debug,"Start to scan all files.");
             var files = FileHelper.GetExeAndDllFileInfos(folder).ToList();
             var results = new List<SingleFileScanResult>();
             foreach (var file in files)
             {
-                LogHelper.CreateLog(LogEventLevel.Information, $"Start to analysis {file.FullName}");
+                LogHelper.CreateLog(LogEventLevel.Debug, $"Start to analysis {file.FullName}");
                 var result = ScanFile(file.FullName, files);
                 results.Add(result);
             }
-            LogHelper.CreateLog(LogEventLevel.Information, "Scan all files completed.");
+            LogHelper.CreateLog(LogEventLevel.Debug, "Scan all files completed.");
             return results;
         }
 

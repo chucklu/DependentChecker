@@ -39,20 +39,43 @@ namespace DependentChecker
 
             var folder = Path.GetDirectoryName(_dependencyPath);
             var scanResults = AllFilesScanner.ScanFolder(folder);
+            RecordScanResults(scanResults);
             if (string.IsNullOrWhiteSpace(_configFilePath))
             {
-                RecordScanResults(scanResults);
                 return;
             }
 
+            ConfigHelper.ConfigFilePathValue = _configFilePath;
+            var allBindingRedirect = ConfigHelper.GetAllBindingRedirect().ToList();
+            LogHelper.CreateLog(LogEventLevel.Debug,$"Currently we have bindingRedirect for {allBindingRedirect.Count} assemblies in config file as following:");
+            foreach (var bindingRedirect in allBindingRedirect)
+            {
+                LogHelper.CreateLog(LogEventLevel.Debug, bindingRedirect);
+            }
 
+            var needBindingRedirectResults =
+                scanResults.Where(x => x.NeedBindingRedirect).Select(x => x.DependencyName).ToList();
+            var uselessBindingRedirect = allBindingRedirect.Except(needBindingRedirectResults).ToList();
+            var lackingBindingRedirect = needBindingRedirectResults.Except(allBindingRedirect).ToList();
+
+            LogHelper.CreateLog(LogEventLevel.Information,$"Please remove the following {uselessBindingRedirect.Count} useless bindingRedirect:");
+            foreach (var item in uselessBindingRedirect)
+            {
+                LogHelper.CreateLog(LogEventLevel.Information, item);
+            }
+
+            LogHelper.CreateLog(LogEventLevel.Information, $"Please complement the following {lackingBindingRedirect.Count} required bindingRedirect:");
+            foreach (var item in lackingBindingRedirect)
+            {
+                LogHelper.CreateLog(LogEventLevel.Information, item);
+            }
         }
 
         private void RecordScanResults(IEnumerable<SingleFileScanResult> results)
         {
             var needBindingRedirectResults = results.Where(x => x.NeedBindingRedirect).ToList();
             int count = needBindingRedirectResults.Count;
-            LogHelper.CreateLog(LogEventLevel.Information,$"We need have bindingRedirect for {count} assemblies as following:");
+            LogHelper.CreateLog(LogEventLevel.Debug,$"We should have bindingRedirect for {count} assemblies as following:");
 
             int index = 0;
             foreach (var needBindingRedirectResult in needBindingRedirectResults)
@@ -64,7 +87,7 @@ namespace DependentChecker
                 var str = string.Join(Environment.NewLine,
                     needBindingRedirectResult.DependentLibraries.Select(x => x.ToString()));
                 stringBuilder.AppendLine(str);
-                LogHelper.CreateLog(LogEventLevel.Information, stringBuilder.ToString());
+                LogHelper.CreateLog(LogEventLevel.Debug, stringBuilder.ToString());
             }
         }
 
