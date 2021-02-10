@@ -118,10 +118,10 @@ namespace DependentChecker
 
                     foreach (var dependency in dependencies)
                     {
-                        Console.WriteLine($"{dependency.FullName}");
+                        Console.WriteLine($@"{dependency.FullName}");
                         if (!dependency.Version.ToString().Equals(version))
                         {
-                            Console.WriteLine($"{dependency.Version}!={version}");
+                            Console.WriteLine($@"{dependency.Version}!={version}");
                             needBindingRedirect = true;
                         }
                         Console.WriteLine();
