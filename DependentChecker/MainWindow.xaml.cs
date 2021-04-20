@@ -165,14 +165,12 @@ namespace DependentChecker
 
         private void RegisterUncaughtExceptionsHandler(AppDomain domain)
         {
-            domain.UnhandledException += new UnhandledExceptionEventHandler(
-                (sender, args) =>
-                {
-                    Exception e = (Exception)args.ExceptionObject;
-                    LogHelper.CreateLog(LogEventLevel.Error, e);
-                    MessageBox.Show(e.ToString(), "Error");
-                    Close();
-                });
+            domain.UnhandledException += (sender, args) =>
+            {
+                Exception e = (Exception)args.ExceptionObject;
+                LogHelper.CreateLog(LogEventLevel.Error, e);
+                MessageBox.Show(e.ToString(), "Error");
+            };
         }
 
         private void ConfigFileChoose_Click(object sender, RoutedEventArgs e)
