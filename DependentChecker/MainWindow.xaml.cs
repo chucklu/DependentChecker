@@ -32,10 +32,17 @@ namespace DependentChecker
 
         private void DependencyChoose_Click(object sender, RoutedEventArgs e)
         {
-            var dependencyExtensions = ".exe;*.dll";
-            _dependencyPath = ChooseFileDialog("library", dependencyExtensions);
-            bool needBindingRedirect = FindDependent(_dependencyPath);
-            SetInfoText(_dependencyPath, needBindingRedirect);
+            try
+            {
+                var dependencyExtensions = ".exe;*.dll";
+                _dependencyPath = ChooseFileDialog("library", dependencyExtensions);
+                bool needBindingRedirect = FindDependent(_dependencyPath);
+                SetInfoText(_dependencyPath, needBindingRedirect);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 
         private void RecordScanResults(IEnumerable<SingleFileScanResult> results)
@@ -167,26 +174,45 @@ namespace DependentChecker
         {
             domain.UnhandledException += (sender, args) =>
             {
-                Exception e = (Exception)args.ExceptionObject;
-                LogHelper.CreateLog(LogEventLevel.Error, e);
-                MessageBox.Show(e.ToString(), "Error");
+                Exception ex = (Exception)args.ExceptionObject;
+                HandleException(ex);
             };
+        }
+
+        private void HandleException(Exception ex)
+        {
+            LogHelper.CreateLog(LogEventLevel.Error, ex);
+            MessageBox.Show(ex.ToString(), "Error");
         }
 
         private void ConfigFileChoose_Click(object sender, RoutedEventArgs e)
         {
-            var configFileExtensions = ".config";
-            var rawDisplayName = "config";
-            _configFilePath = ChooseFileDialog(rawDisplayName, configFileExtensions);
-            LogHelper.CreateLog(LogEventLevel.Information, $"Config file chose: \"{_configFilePath}\"");
+            try
+            {
+                var configFileExtensions = ".config";
+                var rawDisplayName = "config";
+                _configFilePath = ChooseFileDialog(rawDisplayName, configFileExtensions);
+                LogHelper.CreateLog(LogEventLevel.Information, $"Config file chose: \"{_configFilePath}\"");
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 
         private void FolderChoose_Click(object sender, RoutedEventArgs e)
         {
-            var folder = PickFolderDialog();
-            Thread thread = new Thread(new ParameterizedThreadStart(ScanAllLibraries));
-            thread.IsBackground = true;
-            thread.Start(folder);
+            try
+            {
+                var folder = PickFolderDialog();
+                Thread thread = new Thread(new ParameterizedThreadStart(ScanAllLibraries));
+                thread.IsBackground = true;
+                thread.Start(folder);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 
         internal static string PickFolderDialog()
