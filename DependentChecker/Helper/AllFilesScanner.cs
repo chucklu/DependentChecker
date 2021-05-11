@@ -24,19 +24,26 @@ namespace DependentChecker.Helper
             return results;
         }
 
-        public static SingleFileScanResult ScanFile(string filePath,IEnumerable<FileInfo> files)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filePath">the file as dependency</param>
+        /// <param name="files">Files under same folder, which could depend on dependency</param>
+        /// <returns></returns>
+        public static SingleFileScanResult ScanFile(string filePath, IEnumerable<FileInfo> files)
         {
-            AssemblyName fileToName = AssemblyName.GetAssemblyName(filePath); 
-            var version = fileToName.Version.ToString();
+            AssemblyName fileToName = AssemblyName.GetAssemblyName(filePath);
+            var version = fileToName.Version.ToString();//version of dependency
             bool needBindingRedirect = false;
             List<DependentLibrary> dependentLibraries = new List<DependentLibrary>();
 
             foreach (var assemblyFile in files)
             {
                 string libraryName = Path.GetFileNameWithoutExtension(filePath);
-                var libraries = new[] {
+                var libraries = new[]
+                {
                     libraryName,
-                }; 
+                };
                 List<string> libraryList = new List<string>();
                 AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyFile.FullName);
                 var assembly = Assembly.Load(assemblyName);
@@ -52,13 +59,12 @@ namespace DependentChecker.Helper
 
                     foreach (var dependency in dependencies)
                     {
-                        Console.WriteLine($"{dependency.FullName}");
                         if (!dependency.Version.ToString().Equals(version))
                         {
-                            Console.WriteLine($"{dependency.Version}!={version}");
+                            LogHelper.CreateLog(LogEventLevel.Debug,
+                                $"{dependency.FullName} {dependency.Version}!={version}");
                             needBindingRedirect = true;
                         }
-                        Console.WriteLine();
                     }
 
                     var tempDependency = dependencies[0];
