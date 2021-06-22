@@ -65,7 +65,7 @@ namespace DependentChecker
             }
         }
 
-        private void SetInfoText(string dependencyPath,bool needBindingRedirect)
+        private void SetInfoText(string dependencyPath, bool needBindingRedirect)
         {
             var dependency = Assembly.ReflectionOnlyLoadFrom(dependencyPath);
             var dependencyAssemblyName = dependency.GetName();
@@ -111,7 +111,12 @@ namespace DependentChecker
             bool find = false;
             foreach (var assemblyFile in assemblyFiles)
             {
-                AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyFile.FullName);
+                AssemblyName assemblyName = GetAssemblyNameByFullName(assemblyFile.FullName);
+                if (assemblyName == null)
+                {
+                    continue;
+                }
+
                 if (libraries.Contains(assemblyName.Name))
                 {
                     Console.WriteLine(assemblyName.FullName);
@@ -129,7 +134,12 @@ namespace DependentChecker
             int i = 0;
             foreach (var assemblyFile in assemblyFiles)
             {
-                AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyFile.FullName);
+                AssemblyName assemblyName = GetAssemblyNameByFullName(assemblyFile.FullName);
+                if (assemblyName == null)
+                {
+                    continue;
+                }
+
                 var assembly = Assembly.Load(assemblyName);
                 var allDependencies = assembly.GetReferencedAssemblies().ToList();
                 var dependencies = allDependencies.Where(x => libraries.Contains(x.Name)).ToList();
@@ -168,6 +178,21 @@ namespace DependentChecker
             }
 
             return needBindingRedirect;
+        }
+
+        private AssemblyName GetAssemblyNameByFullName(string fullName)
+        {
+            AssemblyName assemblyName = null;
+            try
+            {
+                assemblyName = AssemblyName.GetAssemblyName(fullName);
+            }
+            catch (BadImageFormatException ex)
+            {
+                LogHelper.CreateLog(LogEventLevel.Error, ex);
+            }
+
+            return assemblyName;
         }
 
         private void RegisterUncaughtExceptionsHandler(AppDomain domain)
