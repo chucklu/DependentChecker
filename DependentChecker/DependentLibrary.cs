@@ -6,13 +6,15 @@ namespace DependentChecker
     {
         public string DependentName { get; set; }
 
+        public string DependentVersion { get; set; }
+
         public string DependencyName { get; set; }
 
         public string DependencyVersion { get; set; }
 
         public override string ToString()
         {
-            return $"{DependentName} depends on [{DependencyName}]({DependencyVersion})";
+            return $"[{DependentName}]({DependentVersion}) depends on [{DependencyName}]({DependencyVersion})";
         }
     }
 

@@ -169,6 +169,7 @@ namespace DependentChecker
                     var dependentLibrary = new DependentLibrary
                     {
                         DependentName = assemblyName.Name,
+                        DependentVersion = assemblyName.Version.ToString(),
                         DependencyName = tempDependency.Name,
                         DependencyVersion = tempDependency.Version.ToString()
                     };
