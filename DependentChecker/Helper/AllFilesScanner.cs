@@ -49,7 +49,7 @@ namespace DependentChecker.Helper
                 var assembly = AssemblyHelper.LoadAssembly(assemblyName);
                 if (assembly == null)
                 {
-                    continue;
+                    assembly = AssemblyHelper.GetAssemblyByFile(assemblyFile.FullName);
                 }
                 var allDependencies = AssemblyHelper.GetReferencedAssemblies(assembly);
                 var dependencies = allDependencies.Where(x => libraries.Contains(x.Name)).ToList();

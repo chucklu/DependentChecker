@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Serilog.Events;
@@ -49,12 +50,20 @@ namespace DependentChecker.Helper
                 LogHelper.CreateLog(LogEventLevel.Error, $"Load assembly [{assemblyName.FullName}] failed, {ex}");
             }
 
-            if (assembly == null)
-            {
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                assembly = assemblies.FirstOrDefault(a => a.FullName == assemblyName.FullName);
-            }
+            return assembly;
+        }
 
+        public static Assembly GetAssemblyByFile(string fileName)
+        {
+            Assembly assembly = null;
+            try
+            {
+                assembly = Assembly.ReflectionOnlyLoadFrom(fileName);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.CreateLog(LogEventLevel.Error, $"GetAssemblyByFile failed for {fileName}, {ex}");
+            }
             return assembly;
         }
     }

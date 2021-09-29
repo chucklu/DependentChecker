@@ -143,7 +143,7 @@ namespace DependentChecker
                 var assembly = AssemblyHelper.LoadAssembly(assemblyName);
                 if (assembly == null)
                 {
-                    continue;
+                    assembly = AssemblyHelper.GetAssemblyByFile(assemblyFile.FullName);
                 }
 
                 var allDependencies = AssemblyHelper.GetReferencedAssemblies(assembly);
