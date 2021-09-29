@@ -134,17 +134,8 @@ namespace DependentChecker
             int i = 0;
             foreach (var assemblyFile in assemblyFiles)
             {
-                AssemblyName assemblyName = AssemblyHelper.GetAssemblyNameByFullName(assemblyFile.FullName);
-                if (assemblyName == null)
-                {
-                    continue;
-                }
-
-                var assembly = AssemblyHelper.LoadAssembly(assemblyName);
-                if (assembly == null)
-                {
-                    assembly = AssemblyHelper.GetAssemblyByFile(assemblyFile.FullName);
-                }
+                var assembly = Assembly.ReflectionOnlyLoad(assemblyFile.FullName);
+                var assemblyName = assembly.GetName();
 
                 var allDependencies = AssemblyHelper.GetReferencedAssemblies(assembly);
                 var dependencies = allDependencies.Where(x => libraries.Contains(x.Name)).ToList();
