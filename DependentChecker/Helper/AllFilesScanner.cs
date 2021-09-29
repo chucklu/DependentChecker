@@ -45,7 +45,7 @@ namespace DependentChecker.Helper
                     libraryName,
                 };
                 List<string> libraryList = new List<string>();
-                var assembly = Assembly.ReflectionOnlyLoad(filePath);
+                var assembly = Assembly.ReflectionOnlyLoadFrom(filePath);
                 var assemblyName = assembly.GetName();
                 var allDependencies = AssemblyHelper.GetReferencedAssemblies(assembly);
                 var dependencies = allDependencies.Where(x => libraries.Contains(x.Name)).ToList();

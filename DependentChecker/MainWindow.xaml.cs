@@ -134,7 +134,7 @@ namespace DependentChecker
             int i = 0;
             foreach (var assemblyFile in assemblyFiles)
             {
-                var assembly = Assembly.ReflectionOnlyLoad(assemblyFile.FullName);
+                var assembly = Assembly.ReflectionOnlyLoadFrom(assemblyFile.FullName);
                 var assemblyName = assembly.GetName();
 
                 var allDependencies = AssemblyHelper.GetReferencedAssemblies(assembly);
