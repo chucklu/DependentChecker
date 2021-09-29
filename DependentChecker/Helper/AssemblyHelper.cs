@@ -49,6 +49,12 @@ namespace DependentChecker.Helper
                 LogHelper.CreateLog(LogEventLevel.Error, $"Load assembly [{assemblyName.FullName}] failed, {ex}");
             }
 
+            if (assembly == null)
+            {
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                assembly = assemblies.FirstOrDefault(a => a.FullName == assemblyName.FullName);
+            }
+
             return assembly;
         }
     }
