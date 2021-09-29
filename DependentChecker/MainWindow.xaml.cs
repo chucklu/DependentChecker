@@ -111,7 +111,7 @@ namespace DependentChecker
             bool find = false;
             foreach (var assemblyFile in assemblyFiles)
             {
-                AssemblyName assemblyName = GetAssemblyNameByFullName(assemblyFile.FullName);
+                AssemblyName assemblyName = AssemblyHelper.GetAssemblyNameByFullName(assemblyFile.FullName);
                 if (assemblyName == null)
                 {
                     continue;
@@ -134,14 +134,19 @@ namespace DependentChecker
             int i = 0;
             foreach (var assemblyFile in assemblyFiles)
             {
-                AssemblyName assemblyName = GetAssemblyNameByFullName(assemblyFile.FullName);
+                AssemblyName assemblyName = AssemblyHelper.GetAssemblyNameByFullName(assemblyFile.FullName);
                 if (assemblyName == null)
                 {
                     continue;
                 }
 
-                var assembly = Assembly.Load(assemblyName);
-                var allDependencies = assembly.GetReferencedAssemblies().ToList();
+                var assembly = AssemblyHelper.LoadAssembly(assemblyName);
+                if (assembly == null)
+                {
+                    continue;
+                }
+
+                var allDependencies = AssemblyHelper.GetReferencedAssemblies(assembly);
                 var dependencies = allDependencies.Where(x => libraries.Contains(x.Name)).ToList();
                 if (dependencies.Count > 0)
                 {
@@ -179,21 +184,6 @@ namespace DependentChecker
             }
 
             return needBindingRedirect;
-        }
-
-        private AssemblyName GetAssemblyNameByFullName(string fullName)
-        {
-            AssemblyName assemblyName = null;
-            try
-            {
-                assemblyName = AssemblyName.GetAssemblyName(fullName);
-            }
-            catch (BadImageFormatException ex)
-            {
-                LogHelper.CreateLog(LogEventLevel.Error, ex);
-            }
-
-            return assemblyName;
         }
 
         private void RegisterUncaughtExceptionsHandler(AppDomain domain)
